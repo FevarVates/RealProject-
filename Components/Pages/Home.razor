@@ -1,0 +1,181 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components
+@implements IDisposable
+
+<div class="main-container">
+    <!-- Шапка -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="nav-logo">
+                <h1>Creative Duo Studio</h1>
+            </div>
+            <div class="nav-links">
+                <NavLink href="/blog" class="nav-link">Блог</NavLink>
+                <NavLink href="/about" class="nav-link">О нас</NavLink>
+                <NavLink href="/calculator" class="nav-link">Рассчитать стоимость</NavLink>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Основной контент -->
+    <div class="content-wrapper">
+        <!-- Левая часть - Брат -->
+        <div class="half-section left-section"
+             @onmouseover="@(() => SetActiveSection("left"))"
+             @onmouseout="@(() => SetActiveSection(null))"
+             style="@GetLeftSectionStyle()">
+            
+            <div class="section-content">
+                <div class="person-title">
+                    <h2 class="person-name">Арсений</h2>
+                    <p class="person-role">Звукорежиссёр & Копирайтер</p>
+                </div>
+                
+                <div class="services-list">
+                    <div class="service-item">
+                        <span class="service-icon">🎚️</span>
+                        <span class="service-text">Обработка и чистка звука</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">📝</span>
+                        <span class="service-text">Написание сценариев</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🌐</span>
+                        <span class="service-text">Локализация текстов</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🎵</span>
+                        <span class="service-text">Сведение аудиотреков</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🎙️</span>
+                        <span class="service-text">Звуковой дизайн</span>
+                    </div>
+                </div>
+                
+                <div class="contact-button">
+                    <button class="btn-primary" @onclick="NavigateToCalculator">
+                        Заказать услуги Алексея
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая часть - Сестра -->
+        <div class="half-section right-section"
+             @onmouseover="@(() => SetActiveSection("right"))"
+             @onmouseout="@(() => SetActiveSection(null))"
+             style="@GetRightSectionStyle()">
+            
+            <div class="section-content">
+                <div class="person-title">
+                    <h2 class="person-name">Ирина</h2>
+                    <p class="person-role">Дизайнер & Аниматор</p>
+                </div>
+                
+                <div class="services-list">
+                    <div class="service-item">
+                        <span class="service-icon">🎨</span>
+                        <span class="service-text">Моушн-дизайн</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">✨</span>
+                        <span class="service-text">Морфинг в видео</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🖼️</span>
+                        <span class="service-text">Создание превью</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🎬</span>
+                        <span class="service-text">Работа с видеорядом</span>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">📊</span>
+                        <span class="service-text">Графическая анимация</span>
+                    </div>
+                </div>
+                
+                <div class="contact-button">
+                    <button class="btn-primary" @onclick="NavigateToCalculator">
+                        Заказать услуги Марии
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? activeSection;
+    private Timer? animationTimer;
+    private double leftWidth = 50;
+    private double rightWidth = 50;
+
+    protected override void OnInitialized()
+    {
+        // Таймер для плавной анимации
+        animationTimer = new Timer(_ =>
+        {
+            UpdateWidths();
+            InvokeAsync(StateHasChanged);
+        }, null, 0, 16); // ~60 FPS
+    }
+
+    private void SetActiveSection(string? section)
+    {
+        activeSection = section;
+    }
+
+    private void UpdateWidths()
+    {
+        if (activeSection == "left")
+        {
+            leftWidth = Math.Min(leftWidth + 2, 70);
+            rightWidth = 100 - leftWidth;
+        }
+        else if (activeSection == "right")
+        {
+            rightWidth = Math.Min(rightWidth + 2, 70);
+            leftWidth = 100 - rightWidth;
+        }
+        else
+        {
+            // Плавное возвращение к исходному состоянию
+            if (Math.Abs(leftWidth - 50) > 0.5)
+            {
+                leftWidth += (50 - leftWidth) * 0.1;
+                rightWidth = 100 - leftWidth;
+            }
+            else
+            {
+                leftWidth = 50;
+                rightWidth = 50;
+            }
+        }
+    }
+
+    private string GetLeftSectionStyle()
+    {
+        return $"width: {leftWidth}%;";
+    }
+
+    private string GetRightSectionStyle()
+    {
+        return $"width: {rightWidth}%;";
+    }
+
+    private void NavigateToCalculator()
+    {
+        NavigationManager.NavigateTo("/calculator");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    public void Dispose()
+    {
+        animationTimer?.Dispose();
+    }
+}
