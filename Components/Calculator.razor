@@ -1,0 +1,72 @@
+﻿@page "/calculator"
+
+@rendermode InteractiveServer
+
+Наши услуги :
+
+<div class="form-group">
+    <p>Выберите тип услуги:</p>
+    <select bind="@SelectedServiceType">
+        <option value="">Выберите услугу...</option>
+        <option value="serviceA">Сервис A ($10)</option>
+        <option value="serviceB">Сервис B ($20)</option>
+        <option value="serviceC">Сервис C ($30)</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <p>Дополнительные опции:</p>
+    <ul>
+        <li><input type="checkbox" bind="@ExtraOptions.ServiceOption1" /> Опция №1 (+$5)</li>
+        <li><input type="checkbox" bind="@ExtraOptions.ServiceOption2" /> Опция №2 (+$8)</li>
+        <li><input type="checkbox" bind="@ExtraOptions.ServiceOption3" /> Опция №3 (+$12)</li>
+    </ul>
+</div>
+
+<div class="form-group">
+    <button @onclick="CalculateTotalCost">Рассчитать стоимость</button>
+</div>
+
+<p>Итого сумма оплаты: <strong>@TotalCost</strong></p>
+
+
+@code {
+    public class UserInfoModel
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+    }
+
+    public class ExtraOptionsModel
+    {
+        public bool ServiceOption1 { get; set; }
+        public bool ServiceOption2 { get; set; }
+        public bool ServiceOption3 { get; set; }
+    }
+
+    private UserInfoModel UserInfo = new();
+    private ExtraOptionsModel ExtraOptions = new();
+    private decimal TotalCost = 0m;
+    private string SelectedServiceType = "";
+
+    void CalculateTotalCost()
+    {
+        // Стоимость базового сервиса
+        var baseCost = SelectedServiceType switch
+        {
+            "serviceA" => 10,
+            "serviceB" => 20,
+            "serviceC" => 30,
+            _ => 0
+        };
+
+        // Дополнительные расходы
+        var extraCost = (
+            (ExtraOptions.ServiceOption1 ? 5 : 0)
+          + (ExtraOptions.ServiceOption2 ? 8 : 0)
+          + (ExtraOptions.ServiceOption3 ? 12 : 0));
+
+        TotalCost = baseCost + extraCost;
+    }
+}
+

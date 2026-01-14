@@ -1,0 +1,43 @@
+﻿@page "/service"
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<table>
+@foreach (var item in Services)
+{
+        <thead>
+            <tr>
+                <th>Услуга</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+            <tbody>
+                <tr>
+                    <td>@item</td>
+                </tr>
+            </tbody>
+}
+</table>
+
+Примеры работ:
+
+<button class="btn-primary" @onclick="NavigateToCalculator">
+    Рассчитать стоимость 
+</button>
+
+@code {
+    List<string> Services = new List<string>();
+
+    private void NavigateToCalculator()
+    {
+        NavigationManager.NavigateTo("/calculator");
+    }
+    private void NavigateTAbout()
+    {
+        NavigationManager.NavigateTo("/about");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+}
