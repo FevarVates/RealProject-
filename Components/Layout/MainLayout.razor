@@ -1,8 +1,9 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu/>
+        <NavMenu />
     </div>
 
     <main>
@@ -14,6 +15,31 @@
             @Body
         </article>
     </main>
+
+    @if (!IsHomePage())
+    {
+        <footer class="w-100 bg-light p-3 mt-auto">
+            <div class="container-fluid">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-md-6">
+                        <nav>
+                            <a href="/about">О нас</a>
+                            <a href="/services">Наши услуги</a>
+                            <a href="/contact">Контакты</a>
+                        </nav>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="social-icons">
+                            <a href="https://www.facebook.com/yourcompany"><i class="fab fa-facebook"></i></a>
+                            <a href="https://twitter.com/yourcompany"><i class="fab fa-twitter"></i></a>
+                            <a href="https://instagram.com/yourcompany"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-center w-100">© 2025 Ваша компания.</small>
+            </div>
+        </footer>
+    }
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -21,3 +47,12 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    // Проверяем, является ли текущая страница главной
+    bool IsHomePage() =>
+        navigationManager.Uri.EndsWith("/") || navigationManager.Uri.EndsWith("/index");
+
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+}
