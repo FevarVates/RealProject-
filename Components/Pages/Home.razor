@@ -1,6 +1,9 @@
-﻿@page "/"
+@page "/"
+
 @using Microsoft.AspNetCore.Components
 @implements IDisposable
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 
 <div class="main-container">
     <!-- Шапка -->
@@ -13,6 +16,8 @@
                 <NavLink href="/blog" class="nav-link">Блог</NavLink>
                 <NavLink href="/about" class="nav-link">О нас</NavLink>
                 <NavLink href="/calculator" class="nav-link">Рассчитать стоимость</NavLink>
+                <NavLink href="/faq" class="nav-link">FAQ</NavLink>
+                <NavLink href="/faq" class="nav-link">Язык</NavLink>
             </div>
         </nav>
     </header>
@@ -55,8 +60,8 @@
                 </div>
                 
                 <div class="contact-button">
-                    <button class="btn-primary" @onclick="NavigateToCalculator">
-                        Заказать услуги Алексея
+                    <button class="btn-primary" @onclick="NavigateToService">
+                        Выбрать эту сторону
                     </button>
                 </div>
             </div>
@@ -98,8 +103,8 @@
                 </div>
                 
                 <div class="contact-button">
-                    <button class="btn-primary" @onclick="NavigateToCalculator">
-                        Заказать услуги Марии
+                    <button class="btn-primary" @onclick="NavigateToService">
+                        Выбрать
                     </button>
                 </div>
             </div>
@@ -169,6 +174,14 @@
     private void NavigateToCalculator()
     {
         NavigationManager.NavigateTo("/calculator");
+    }
+    private void NavigateToAbout()
+    {
+        NavigationManager.NavigateTo("/about");
+    }
+    private void NavigateToService()
+    {
+        NavigationManager.NavigateTo("/service");
     }
 
     [Inject]
