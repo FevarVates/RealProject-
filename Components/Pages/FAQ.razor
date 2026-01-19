@@ -1,0 +1,112 @@
+﻿@page "/faq"
+@inject IJSRuntime JSRuntime
+
+<h1>Часто задаваемые вопросы</h1>
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <!-- Отображение списка вопросов -->
+        <ul class="list-group">
+            @foreach(var item in faqs)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span style="cursor:pointer" @onclick="@(() => ToggleAnswer(item))">@item.Question</span>
+                    <button type="button" class="btn btn-outline-danger ms-2" @onclick="() => DeleteQuestion(item.Id)">Удалить</button>
+                </li>
+                <div style="display:@(item.IsExpanded ? "block" : "none")"
+                     class="animation-slide-in-left @(item.IsExpanded ? "show" : "")">
+                    <p class="mt-2 mb-0 text-muted"><strong>Ответ:</strong> @item.Answer</p>
+                </div>
+            }
+        </ul>
+        
+        <!-- Форма добавления нового вопроса -->
+        <hr />
+        <h3>Добавление нового вопроса</h3>
+        <EditForm Model="@newFaq" OnValidSubmit="@AddNewFaq">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="questionInput" class="form-label">Вопрос:</label>
+                <InputText id="questionInput" class="form-control" @bind-Value="newFaq.Question" />
+            </div>
+
+            <div class="mb-3">
+                <label for="answerInput" class="form-label">Ответ:</label>
+                <InputText id="answerInput" class="form-control" @bind-Value="newFaq.Answer" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private List<FaqItem> faqs = new();
+    private FaqItem newFaq = new();
+
+       public class FaqItem
+    {
+        public int Id { get; set; }
+        public string Question { get; set; } = string.Empty; // Инициализация
+        public string Answer { get; set; } = string.Empty;   // Инициализация
+        public bool IsExpanded { get; set; } = false;
+    }
+    
+    protected override void OnInitialized()
+    {
+        faqs.AddRange(new[] {
+            new FaqItem {Id = 1, Question = "Что такое Blazor?", Answer = "Blazor — фреймворк для разработки веб-приложений."},
+            new FaqItem {Id = 2, Question = "Какие преимущества Blazor?", Answer = "Преимущества включают работу на .NET Core, производительность и доступность серверных решений"}
+        });
+    }
+
+    private void AddNewFaq()
+    {
+        if (string.IsNullOrWhiteSpace(newFaq.Question) || string.IsNullOrWhiteSpace(newFaq.Answer))
+        {
+            // Можно добавить отображение сообщения об ошибке
+            return;
+        }
+
+        int maxId = faqs.Any() ? faqs.Max(x => x.Id) : 0;
+        newFaq.Id = maxId + 1;
+        faqs.Add(newFaq);
+        newFaq = new FaqItem(); // очистить форму
+        StateHasChanged();
+    }
+
+    private void ToggleAnswer(FaqItem item)
+    {
+        // Закрываем все остальные
+        foreach (var i in faqs)
+        {
+            if (i != item)
+            {
+                i.IsExpanded = false;
+            }
+        }
+        // Переключаем выбранный
+        item.IsExpanded = !item.IsExpanded;
+        StateHasChanged();
+    }
+
+    private void DeleteQuestion(int questionId)
+    {
+        faqs.RemoveAll(q => q.Id == questionId);
+        StateHasChanged();
+    }
+}
+
+<style>
+/* Анимация плавного появления слайда слева */
+.animation-slide-in-left {
+    transition: all 0.3s ease-out;
+    transform: translateX(-10px);
+    opacity: 0;
+}
+.animation-slide-in-left.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+</style>
